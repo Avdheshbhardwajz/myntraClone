@@ -1,12 +1,16 @@
-// src/components/ProductCard.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-import { addToCart } from "../pages/api"; // Import addToCart function
+import { useDispatch } from "react-redux";
+import { addItem as addCartItem } from "../store/cartSlice"; // Import addItem for cart
+import { addItem as addWishlistItem } from "../store/wishlistSlice"; // Import addItem for wishlist
+import { AiOutlineHeart } from "react-icons/ai"; // Import heart icon for wishlist
 
 const Productcard = ({ product }) => {
   const navigate = useNavigate();
-  const [cartSuccess, setCartSuccess] = useState(false); // Track if item added successfully
+  const dispatch = useDispatch();
+  const [cartSuccess, setCartSuccess] = useState(false); // Track if item added to cart
+  const [wishlistSuccess, setWishlistSuccess] = useState(false); // Track if item added to wishlist
 
   const handleCardClick = () => {
     navigate(`/product/${product.id}`);
@@ -22,13 +26,19 @@ const Productcard = ({ product }) => {
   };
 
   // Function to handle Add to Cart button click
-  const handleAddToCart = async () => {
-    try {
-      await addToCart(product); // Add product to the cart via API
-      setCartSuccess(true); // Set success message or feedback
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-    }
+  const handleAddToCart = (e) => {
+    e.stopPropagation(); // Prevent card click from triggering
+    dispatch(addCartItem(product)); // Dispatch add to cart action
+    setCartSuccess(true); // Show cart success message
+    setTimeout(() => setCartSuccess(false), 3000); // Hide after 3 seconds
+  };
+
+  // Function to handle Add to Wishlist button click
+  const handleAddToWishlist = (e) => {
+    e.stopPropagation(); // Prevent card click from triggering
+    dispatch(addWishlistItem(product)); // Dispatch add to wishlist action
+    setWishlistSuccess(true); // Show wishlist success message
+    setTimeout(() => setWishlistSuccess(false), 3000); // Hide after 3 seconds
   };
 
   return (
@@ -48,28 +58,30 @@ const Productcard = ({ product }) => {
         <p className="text-gray-600 mb-4">
           {truncateDescription(product.description, 20)}
         </p>
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           {/* Add to Cart button */}
           <button
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent card click from triggering
-              handleAddToCart(); // Call add to cart function
-            }}
+            onClick={handleAddToCart}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Add to Cart
           </button>
 
+          {/* Add to Wishlist button with heart icon */}
           <button
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-            onClick={(e) => e.stopPropagation()} // Prevent card click
+            onClick={handleAddToWishlist}
+            className="text-red-500 text-2xl hover:text-red-700"
           >
-            Buy Now
+            <AiOutlineHeart />
           </button>
         </div>
-        {/* Show success message */}
+
+        {/* Show success messages */}
         {cartSuccess && (
           <p className="text-green-600 mt-2">Item added to cart!</p>
+        )}
+        {wishlistSuccess && (
+          <p className="text-green-600 mt-2">Item added to wishlist!</p>
         )}
       </div>
     </div>

@@ -1,7 +1,7 @@
 // src/ProductList.js
 import React, { useEffect, useState } from "react";
 import { fetchProducts } from "./api";
-import ProductCard from "../components/Productcard"; // Make sure the path is correct
+import ProductCard from "../components/Productcard"; // Ensure the correct path
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -13,10 +13,8 @@ const Products = () => {
       try {
         const data = await fetchProducts();
         setProducts(data);
-        // console.log(data);
       } catch (error) {
         setError(error.message);
-        // console.log(error.message);
       } finally {
         setLoading(false);
       }

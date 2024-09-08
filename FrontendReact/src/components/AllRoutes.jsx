@@ -8,6 +8,7 @@ import Checkout from "../pages/Checkout";
 import { Route, Routes } from "react-router-dom";
 import Login from "../pages/Login";
 import SignUp from "../pages/Signup";
+import OrderConfirmation from "../pages/OrderConfirmation";
 
 const AllRoutes = () => {
   return (
@@ -20,6 +21,8 @@ const AllRoutes = () => {
       <Route path="/product/:id" element={<ProductDetails />} />
       <Route path="/wishlist" element={<Wishlist />} />
       <Route path="/checkout/:id" element={<Checkout />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/order-confirmation" element={<OrderConfirmation />} />
     </Routes>
   );
 };
