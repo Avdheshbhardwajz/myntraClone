@@ -12,7 +12,7 @@ const productSchema = new mongoose.Schema(
       required: [true, "Please enter the product description"],
     },
     price: {
-      type: Number,
+      type: String,
       required: [true, "Please enter the product price"],
     },
     category: {
@@ -38,8 +38,8 @@ const productSchema = new mongoose.Schema(
       default: 0,
     },
     numOfReviews: {
-      type: Number,
-      default: 0,
+      type: String,
+      default: "0",
     },
     images: [
       {

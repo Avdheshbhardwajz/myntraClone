@@ -1,5 +1,5 @@
 const Order = require("../models/order.model"); // Import the Order model
-const Cart = require("../models/bag.model"); // Import the Cart model (if needed for order creation)
+const Cart = require("../models/cart.model"); // Import the Cart model (if needed for order creation)
 
 // @desc    Create a new order
 // @route   POST /api/orders
