@@ -1,26 +1,74 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
 const initialState = {
   items: [],
+  loading: false,
+  error: null,
 };
+
+export const addItem = createAsyncThunk("addWishlist", async (item) => {
+  const response = await axios.post(
+    `${import.meta.env.VITE_API_URL}/api/v1/wishlist/add`,
+    item
+  );
+  return response.data;
+});
+
+export const getItem = createAsyncThunk("getWishlist", async () => {
+  const response = await axios.get(
+    `${import.meta.env.VITE_API_URL}/api/v1/wishlist/get`
+  );
+  return response.data;
+});
+export const deleteItem = createAsyncThunk("deleteWishlist", async (id) => {
+  const response = await axios.delete(
+    `${import.meta.env.VITE_API_URL}/api/v1/wishlist/delete/${id}`
+  );
+  return response.data;
+});
 
 const wishlistSlice = createSlice({
   name: "wishlist",
   initialState,
-  reducers: {
-    addItem: (state, action) => {
-      const exist = state.items.find((item) => item.id === action.payload.id);
-      if (exist) {
-        return state;
-      }
-      state.items.push(action.payload);
-    },
-    removeItem: (state, action) => {
-      state.items = state.items.filter((item) => item.id !== action.payload);
-    },
+  extraReducers: (builder) => {
+    builder.addCase(addItem.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(addItem.fulfilled, (state, action) => {
+      state.loading = false;
+      state.items = action.payload;
+    });
+    builder.addCase(addItem.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    });
+
+    builder.addCase(getItem.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(getItem.fulfilled, (state, action) => {
+      state.loading = false;
+      state.items = action.payload;
+    });
+    builder.addCase(getItem.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    });
+
+    builder.addCase(deleteItem.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(deleteItem.fulfilled, (state, action) => {
+      state.loading = false;
+      state.items = action.payload;
+    });
+    builder.addCase(deleteItem.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    });
   },
 });
-
-export const { addItem, removeItem } = wishlistSlice.actions;
 
 export default wishlistSlice.reducer;

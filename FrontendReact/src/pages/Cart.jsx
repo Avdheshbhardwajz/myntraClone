@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { removeItem } from "../store/cartSlice";
+import { getItem, deleteItem } from "../store/wishlistSlice";
 import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
@@ -8,10 +8,26 @@ const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Initialize navigate
 
+  useEffect(() => {
+    dispatch(getItem());
+  }, [dispatch]);
+
   // Handle redirection to the Checkout page
   const handleCheckout = () => {
     navigate("/checkout");
   };
+
+  const handleRemove = (id) => {
+    dispatch(deleteItem(id));
+  };
+
+  if (loading) {
+    return <p className="text-lg text-center">Loading...</p>;
+  }
+
+  if (error) {
+    return <p className="text-lg text-center text-red-500">Error: {error}</p>;
+  }
 
   return (
     <div className="bg-black text-white min-h-screen py-10 px-5">
@@ -33,7 +49,7 @@ const Cart = () => {
                   <p className="text-gray-400">${item.price}</p>
                 </div>
                 <button
-                  onClick={() => dispatch(removeItem(item.id))}
+                  onClick={() => handleRemove(item.id)}
                   className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300"
                 >
                   Remove
