@@ -33,9 +33,9 @@ app.get("/", (req, res) => {
 app.use("/api/v1/auth", auth);
 app.use("/api/v1/user", user);
 app.use("/api/v1/product", authMiddleware, product);
-app.use("/api/v1/cart", authMiddleware, cart);
+app.use("/api/v1/cart", cart);
 app.use("/api/v1/order", authMiddleware, order);
-app.use("/api/v1/wishlist", authMiddleware, wishlist);
+app.use("/api/v1/wishlist", wishlist);
 
 app.use(errorHandler);
 const PORT = process.env.PORT;

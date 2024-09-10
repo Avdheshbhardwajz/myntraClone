@@ -8,12 +8,12 @@ const {
 } = require("../controllers/wishlist.controller");
 
 // Route to add a product to the wishlist
-router.post("/", addToWishlist);
+router.post("/add/:id", addToWishlist);
 
 // Route to remove a product from the wishlist
-router.delete("/:productId", removeFromWishlist);
+router.delete("/delete/:productId", removeFromWishlist);
 
 // Route to get the user's wishlist
-router.get("/", getUserWishlist);
+router.get("/get", getUserWishlist);
 
 module.exports = router;
