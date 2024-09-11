@@ -8,23 +8,31 @@ const initialState = {
   error: null,
 };
 
+const token = localStorage.getItem("Authorization");
+console.log(token);
 export const addItem = createAsyncThunk("addWishlist", async (item) => {
   const response = await axios.post(
-    `${import.meta.env.VITE_API_URL}/api/v1/wishlist/add`,
-    item
+    `${import.meta.env.VITE_API_LINK}/api/v1/wishlist/add`,
+    item,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
+  console.log(response.data);
   return response.data;
 });
 
-export const getItem = createAsyncThunk("getWishlist", async () => {
+export const getItem = createAsyncThunk("getWishlist", async (id) => {
   const response = await axios.get(
-    `${import.meta.env.VITE_API_URL}/api/v1/wishlist/get`
+    `${import.meta.env.VITE_API_LINK}/api/v1/wishlist/get/${id}`
   );
   return response.data;
 });
 export const deleteItem = createAsyncThunk("deleteWishlist", async (id) => {
   const response = await axios.delete(
-    `${import.meta.env.VITE_API_URL}/api/v1/wishlist/delete/${id}`
+    `${import.meta.env.VITE_API_LINK}/api/v1/wishlist/delete/${id}`
   );
   return response.data;
 });

@@ -3,45 +3,52 @@ const Product = require("../models/product.model"); // assuming you have a Produ
 
 // Add product to cart
 exports.addToCart = async (req, res) => {
-  const { userId } = req.body;
-  const { productId, quantity } = req.body;
+  const { userId } = req.user; // Extract user ID from the request (e.g., via token)
+  let { id, title, price, quantity } = req.body; // Get product ID, title, price, and quantity from the request body
 
   try {
-    const product = await Product.findById(productId);
+    // Find the product by ID, assuming ID is a string
+    // let product = await Product.findById(id);
 
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
+    // if (!product) {
+    //   return res.status(404).json({ message: "Product not found" });
+    // }
 
+    // Find the user's cart
     let cart = await Cart.findOne({ userId });
 
     if (!cart) {
+      // If the user doesn't have a cart, create one
       cart = new Cart({ userId, items: [] });
     }
 
-    const cartItem = cart.items.find(
-      (item) => item.productId.toString() === productId
-    );
+    // Check if the product is already in the cart
+    const cartItem = cart.items.find((item) => item.productId === id);
 
     if (cartItem) {
-      cartItem.quantity += quantity;
+      // If the product exists in the cart, increase its quantity
+      cartItem.quantity += quantity; // Adjust quantity here
     } else {
+      // If the product is not in the cart, add it
       cart.items.push({
-        productId: product._id,
-        title: product.title,
-        price: product.price,
-        quantity,
-        image: product.image,
+        productId: id, // Use product ID as string
+        title: title,
+        price: price,
+        quantity: quantity, // Quantity passed from req.body
       });
     }
 
+    // Recalculate the total price after updating the cart
     cart.calculateTotalPrice();
+
+    // Save the updated cart
     await cart.save();
 
+    // Respond with the updated cart
     res.status(200).json(cart);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error adding to cart" });
+    res.status(500).json({ message: "Error adding product to cart" });
   }
 };
 
@@ -75,9 +82,7 @@ exports.deleteFromCart = async (req, res) => {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    cart.items = cart.items.filter(
-      (item) => item.productId.toString() !== productId
-    );
+    cart.items = cart.items.filter((item) => item.productId !== productId);
     cart.calculateTotalPrice();
     await cart.save();
 

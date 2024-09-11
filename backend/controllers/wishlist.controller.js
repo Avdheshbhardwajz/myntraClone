@@ -1,17 +1,11 @@
-const Wishlist = require("../models/wishlist.model"); // Adjust the path according to your file structure
-const Product = require("../models/product.model"); // Adjust the path according to your file structure
+const Wishlist = require("../models/wishlist.model");
 
+// Add a product to the wishlist
 // Add a product to the wishlist
 exports.addToWishlist = async (req, res) => {
   try {
-    const { productId } = req.body;
-    const userId = req.user._id; // Assuming you're using authentication middleware to set req.user
-
-    // Check if the product exists
-    const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
+    const product = req.body; // Full product object from the request body
+    const userId = req.user.userId; // Assuming authentication middleware sets req.user._id
 
     // Find or create the wishlist for the user
     let wishlist = await Wishlist.findOne({ user: userId });
@@ -19,18 +13,23 @@ exports.addToWishlist = async (req, res) => {
       wishlist = new Wishlist({ user: userId, products: [] });
     }
 
-    // Check if the product is already in the wishlist
-    if (wishlist.products.includes(productId)) {
+    // Check if the product is already in the wishlist based on its `id` (or `_id`)
+    const productExists = wishlist.products.some(
+      (p) => p.id === product.id // Adjust to your product's unique identifier
+    );
+
+    if (productExists) {
       return res.status(400).json({ message: "Product already in wishlist" });
     }
 
-    // Add product to wishlist
-    wishlist.products.push(productId);
+    // Add the entire product to the wishlist
+    wishlist.products.push(product);
     await wishlist.save();
 
-    res
-      .status(200)
-      .json({ message: "Product added to wishlist successfully", wishlist });
+    res.status(200).json({
+      message: "Product added to wishlist successfully",
+      wishlist,
+    });
   } catch (error) {
     console.error("Error adding product to wishlist:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -50,14 +49,15 @@ exports.removeFromWishlist = async (req, res) => {
     }
 
     // Check if the product is in the wishlist
-    if (!wishlist.products.includes(productId)) {
+    const productIndex = wishlist.products.findIndex(
+      (p) => p.productId === productId
+    );
+    if (productIndex === -1) {
       return res.status(404).json({ message: "Product not found in wishlist" });
     }
 
     // Remove the product from the wishlist
-    wishlist.products = wishlist.products.filter(
-      (id) => id.toString() !== productId
-    );
+    wishlist.products.splice(productIndex, 1);
     await wishlist.save();
 
     res.status(200).json({
@@ -76,13 +76,12 @@ exports.getUserWishlist = async (req, res) => {
     const userId = req.user._id;
 
     // Find the wishlist for the user
-    const wishlist = await Wishlist.findOne({ user: userId }).populate(
-      "products"
-    );
+    const wishlist = await Wishlist.findOne({ user: userId });
     if (!wishlist) {
       return res.status(404).json({ message: "Wishlist not found" });
     }
 
+    // Since you're storing full product data, you can simply return the wishlist
     res.status(200).json(wishlist);
   } catch (error) {
     console.error("Error retrieving wishlist:", error);

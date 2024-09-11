@@ -26,7 +26,7 @@ const Login = () => {
         formData
       );
       localStorage.setItem("Authorization", response.data.token); // Store JWT token
-      console.log(response.data.token);
+      console.log(response.data);
 
       navigate("/"); // Redirect to home page or any other page on success
     } catch (err) {

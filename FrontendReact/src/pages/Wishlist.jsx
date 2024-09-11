@@ -1,25 +1,39 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { removeItem } from "../store/wishlistSlice";
+import { getItem, deleteItem } from "../store/wishlistSlice"; // Import getItem
 import { Link } from "react-router-dom";
 import { AiOutlineClose } from "react-icons/ai";
 
 const Wishlist = () => {
-  const wishlistItems = useSelector((state) => state.wishlist.items); // Get wishlist items from store
+  const {
+    items: wishlistItems,
+    loading,
+    error,
+  } = useSelector((state) => state.wishlist); // Destructure state
   const dispatch = useDispatch();
 
-  // Function to handle removing item from wishlist
-  const handleRemoveFromWishlist = (id) => {
-    console.log(id);
-    dispatch(removeItem(id)); // Dispatch removeItem action
+  useEffect(() => {
+    dispatch(getItem()); // Fetch wishlist items on mount
+  }, [dispatch]);
+
+  const handleRemove = (id) => {
+    dispatch(deleteItem(id)); // Dispatch deleteItem action
   };
+
+  if (loading) {
+    return <p className="text-lg text-center">Loading...</p>; // Show loading while fetching
+  }
+
+  if (error) {
+    return <p className="text-lg text-center text-red-500">Error: {error}</p>; // Show error message if any
+  }
 
   return (
     <div className="bg-black min-h-screen text-white font-poppins">
       <div className="container mx-auto py-10 px-4">
         <h1 className="text-3xl font-bold mb-6 text-center">My Wishlist</h1>
 
-        {wishlistItems.length === 0 ? (
+        {wishlistItems && wishlistItems.length === 0 ? (
           <p className="text-center text-lg">Your wishlist is empty.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -40,7 +54,7 @@ const Wishlist = () => {
                     {item.title}
                   </h2>
                   <button
-                    onClick={() => handleRemoveFromWishlist(item.id)}
+                    onClick={() => handleRemove(item.id)}
                     className="text-red-500 hover:text-red-700"
                   >
                     <AiOutlineClose size={20} />

@@ -1,33 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getItem, deleteItem } from "../store/wishlistSlice";
+import { getItem, deleteItem } from "../store/cartSlice";
 import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
-  const items = useSelector((state) => state.cart.items);
+  const items = useSelector((state) => state.cart.items || []); // Ensure items isn't undefined
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(getItem());
   }, [dispatch]);
 
-  // Handle redirection to the Checkout page
-  const handleCheckout = () => {
-    navigate("/checkout");
-  };
-
   const handleRemove = (id) => {
     dispatch(deleteItem(id));
   };
 
-  if (loading) {
-    return <p className="text-lg text-center">Loading...</p>;
-  }
-
-  if (error) {
-    return <p className="text-lg text-center text-red-500">Error: {error}</p>;
-  }
+  const handleCheckout = () => {
+    navigate("/checkout");
+  };
 
   return (
     <div className="bg-black text-white min-h-screen py-10 px-5">
@@ -58,7 +49,6 @@ const Cart = () => {
             ))}
           </ul>
 
-          {/* Proceed to Checkout Button */}
           <div className="mt-6 flex justify-center">
             <button
               onClick={handleCheckout}

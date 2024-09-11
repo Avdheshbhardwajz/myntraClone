@@ -1,21 +1,25 @@
 const mongoose = require("mongoose");
 
-const wishlistSchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Reference to the User model
-      required: true,
-    },
-    products: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product", // Reference to the Product model
-        required: true,
-      },
-    ],
+const wishlistSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
   },
-  { timestamps: true } // Automatically add createdAt and updatedAt fields
-);
+  products: [
+    {
+      id: Number,
+      title: String,
+      price: Number,
+      description: String,
+      category: String,
+      image: String,
+      rating: {
+        rate: Number,
+        count: Number,
+      },
+    },
+  ],
+});
 
 module.exports = mongoose.model("Wishlist", wishlistSchema);
