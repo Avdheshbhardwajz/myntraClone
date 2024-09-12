@@ -1,5 +1,18 @@
 const Product = require("../models/product.model");
 
+exports.getProductOne = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const product = await Product.findById(id);
+
+    if (!product) {
+      res.status(404).json("Provided product id is wrong ");
+    }
+    res.status(200).json(product);
+  } catch (error) {}
+};
+
 // Add a new product
 exports.addProduct = async (req, res) => {
   try {
@@ -45,13 +58,15 @@ exports.getProducts = async (req, res) => {
     // Pagination
     const skip = (page - 1) * limit;
     const totalProducts = await Product.countDocuments(filter);
+
     const products = await Product.find(filter)
       .sort(sort)
       .skip(skip)
       .limit(parseInt(limit));
-
+    const totalPages = Math.ceil(totalProducts / limit);
     res.status(200).json({
       totalProducts,
+      totalPages,
       products,
       page: parseInt(page),
       limit: parseInt(limit),
@@ -88,21 +103,6 @@ exports.searchProducts = async (req, res) => {
     res.status(200).json(products);
   } catch (error) {
     console.error("Error searching products:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-// Get product by ID
-exports.getProductById = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const product = await Product.findById(id);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-    res.status(200).json(product);
-  } catch (error) {
-    console.error("Error fetching product by ID:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -226,5 +226,23 @@ exports.deleteProductReview = async (req, res) => {
   } catch (error) {
     console.error("Error deleting review:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// this controller will send all the cateogryt along with first product image assosiated with the brand
+exports.getAllBrands = async (req, res) => {
+  try {
+    const uniqueBrands = await Product.distinct("brand");
+
+    const brandWithImage = await Promise.all(
+      uniqueBrands.map(async (brand) => {
+        const product = await Product.findOne({ brand }, "images");
+        const imageUrl = product?.images?.split("|")[0] || "";
+        return { brand, image: imageUrl || "" };
+      })
+    );
+    res.status(200).json({ brands: brandWithImage });
+  } catch (error) {
+    res.status(500).json({ message: "error fetching brand" });
   }
 };

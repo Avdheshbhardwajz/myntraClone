@@ -1,22 +1,23 @@
 const mongoose = require("mongoose");
 
+// Import the Product model
+const Product = require("./product.model"); // Adjust the path as needed
+
 const cartSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // assuming there's a User model
+    ref: "User", // Reference to the User model
     required: true,
   },
   items: [
     {
-      id: String,
-      title: String,
-      price: Number,
-      description: String,
-      category: String,
-      image: String,
-      rating: {
-        rate: Number,
-        count: Number,
+      productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product", // Reference to the Product model
+      },
+      quantity: {
+        type: Number,
+        default: 1, // Default quantity is 1
       },
     },
   ],
@@ -26,11 +27,19 @@ const cartSchema = new mongoose.Schema({
   },
 });
 
-cartSchema.methods.calculateTotalPrice = function () {
-  this.totalPrice = this.items.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+// Method to calculate total price
+cartSchema.methods.calculateTotalPrice = async function () {
+  const items = this.items;
+  let total = 0;
+
+  for (const item of items) {
+    const product = await Product.findById(item.productId);
+    if (product) {
+      total += product.variant_price * item.quantity;
+    }
+  }
+
+  this.totalPrice = total;
   return this.totalPrice;
 };
 

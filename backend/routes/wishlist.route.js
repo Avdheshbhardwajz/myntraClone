@@ -14,6 +14,6 @@ router.post("/add", addToWishlist);
 router.delete("/delete/:productId", removeFromWishlist);
 
 // Route to get the user's wishlist
-router.get("/get/:id", getUserWishlist);
+router.get("/get", getUserWishlist);
 
 module.exports = router;

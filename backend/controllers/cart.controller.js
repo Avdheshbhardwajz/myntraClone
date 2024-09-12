@@ -4,15 +4,15 @@ const Product = require("../models/product.model"); // assuming you have a Produ
 // Add product to cart
 exports.addToCart = async (req, res) => {
   const { userId } = req.user; // Extract user ID from the request (e.g., via token)
-  let { id, title, price, quantity } = req.body; // Get product ID, title, price, and quantity from the request body
+  let { uniqueId, quantity } = req.body; // Get product ID, title, price, and quantity from the request body
 
   try {
     // Find the product by ID, assuming ID is a string
-    // let product = await Product.findById(id);
+    let product = await Product.findById(uniqueId);
 
-    // if (!product) {
-    //   return res.status(404).json({ message: "Product not found" });
-    // }
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
 
     // Find the user's cart
     let cart = await Cart.findOne({ userId });
@@ -23,7 +23,7 @@ exports.addToCart = async (req, res) => {
     }
 
     // Check if the product is already in the cart
-    const cartItem = cart.items.find((item) => item.productId === id);
+    const cartItem = cart.items.find((item) => item.productId === uniqueId);
 
     if (cartItem) {
       // If the product exists in the cart, increase its quantity
@@ -31,9 +31,8 @@ exports.addToCart = async (req, res) => {
     } else {
       // If the product is not in the cart, add it
       cart.items.push({
-        productId: id, // Use product ID as string
-        title: title,
-        price: price,
+        productId: uniqueId, // Use product ID as string
+
         quantity: quantity, // Quantity passed from req.body
       });
     }
@@ -54,10 +53,10 @@ exports.addToCart = async (req, res) => {
 
 // Get user cart
 exports.getCart = async (req, res) => {
-  const { userId } = req.params;
+  const { userId } = req.user;
 
   try {
-    const cart = await Cart.findOne({ userId });
+    const cart = await Cart.findOne({ userId }).populate("items.productId");
 
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });

@@ -5,7 +5,7 @@ const router = express.Router();
 const {
   addProduct,
   getProducts,
-  getProductById,
+
   updateProduct,
   deleteProduct,
   addProductReview,
@@ -13,6 +13,8 @@ const {
   deleteProductReview,
   getFeaturedProducts,
   searchProducts,
+  getAllBrands,
+  getProductOne,
 } = require("../controllers/product.controller");
 
 // Routes
@@ -40,7 +42,7 @@ router.get("/search", searchProducts);
 // @route   GET /api/products/:id
 // @desc    Get product by ID
 // @access  Public
-router.get("/:id", getProductById);
+router.get("/:id", getProductOne);
 
 // @route   PUT /api/products/:id
 // @desc    Update product by ID
@@ -66,5 +68,7 @@ router.get("/:id/reviews", getProductReviews);
 // @desc    Delete a product review by ID
 // @access  Private/Admin
 router.delete("/:id/reviews/:reviewId", deleteProductReview);
+
+router.get("/brand", getAllBrands);
 
 module.exports = router;

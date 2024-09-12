@@ -1,86 +1,25 @@
 const mongoose = require("mongoose");
 
-const productSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: [true, "Please enter the product name"],
-      trim: true,
-    },
-    description: {
-      type: String,
-      required: [true, "Please enter the product description"],
-    },
-    price: {
-      type: String,
-      required: [true, "Please enter the product price"],
-    },
-    category: {
-      type: String,
-      required: [true, "Please select a category"],
-    },
-    brand: {
-      type: String,
-      required: [true, "Please enter the brand name"],
-    },
-    stock: {
-      type: Number,
-      required: [true, "Please enter stock quantity"],
-      validate: {
-        validator: function (value) {
-          return Number.isInteger(value) && value >= 0;
-        },
-        message: "Stock must be a non-negative integer",
-      },
-    },
-    ratings: {
-      type: Number,
-      default: 0,
-    },
-    numOfReviews: {
-      type: String,
-      default: "0",
-    },
-    images: [
-      {
-        public_id: {
-          type: String,
-          required: true,
-        },
-        url: {
-          type: String,
-          required: true,
-        },
-      },
-    ],
-    reviews: [
-      {
-        user: {
-          type: mongoose.Schema.ObjectId,
-          ref: "User",
-          required: true,
-        },
-        name: {
-          type: String,
-          required: true,
-        },
-        rating: {
-          type: Number,
-          required: true,
-        },
-        comment: {
-          type: String,
-          required: true,
-        },
-      },
-    ],
-    createdBy: {
-      type: mongoose.Schema.ObjectId,
-      ref: "User",
-      required: true,
-    },
-  },
-  { timestamps: true }
-);
+const ProductSchema = new mongoose.Schema({
+  uniq_id: String,
+  crawl_timestamp: String,
+  product_id: Number,
+  link: String,
+  size: String,
+  variant_sku: String,
+  brand: String, // <-- Important field for your "Shop by Brand" feature
+  title: String,
+  actual_color: String,
+  dominant_color: String,
+  product_type: String,
+  images: String,
+  body: String,
+  product_details: String,
+  variant_price: Number,
+  is_in_stock: String,
+  inventory: Number,
+  // add other fields...
+});
 
-module.exports = mongoose.model("Product", productSchema);
+const Product = mongoose.model("Product", ProductSchema);
+module.exports = Product;
