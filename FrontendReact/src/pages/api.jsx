@@ -5,10 +5,12 @@ const BASE_URL = import.meta.env.VITE_PRODUCT_API;
 
 const API_URL = import.meta.env.VITE_API_LINK;
 
-export const fetchProducts = async () => {
+export const fetchProducts = async (page = 1, limit = 10) => {
   try {
-    const response = await axios.get(`${BASE_URL}/products`);
-    console.log(response.data);
+    const response = await axios.get(`${API_URL}/api/v1/product`, {
+      params: { page, limit },
+    });
+    console.log(response.data.products);
     return response.data;
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -20,18 +22,15 @@ export const fetchProducts = async () => {
 export const fetchProductById = async (id) => {
   try {
     const token = localStorage.getItem("Authorization"); // Get the token
-    const response = await axios.get(
-      `https://fakestoreapi.com/products/${id}`,
-      {
-        headers: {
-          Authorization: `${token}`, // Set the token in the Authorization header
-        },
-      }
-    );
+    const response = await axios.get(`${API_URL}/api/v1/product/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Set the token in the Authorization header
+      },
+    });
 
     return response.data;
   } catch (error) {
-    console.error("Error fetching product by id:", error);
+    console.error("Error fetching product by id:", error.message);
     throw error;
   }
 };

@@ -7,7 +7,7 @@ import PaymentForm from "../components/PaymentForm";
 const Checkout = () => {
   const cartItems = useSelector((state) => state.cart.items);
   const totalAmount = cartItems.reduce(
-    (acc, item) => acc + parseFloat(item.price),
+    (acc, item) => acc + parseFloat(item.productId.variant_price),
     0
   );
 

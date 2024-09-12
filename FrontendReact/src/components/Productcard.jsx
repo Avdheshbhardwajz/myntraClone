@@ -13,22 +13,13 @@ const Productcard = ({ product }) => {
   const [wishlistSuccess, setWishlistSuccess] = useState(false); // Track if item added to wishlist
 
   const handleCardClick = () => {
-    navigate(`/product/${product.id}`);
-  };
-
-  // Function to truncate the description to 20 words
-  const truncateDescription = (description, wordLimit) => {
-    const words = description.split(" ");
-    if (words.length > wordLimit) {
-      return words.slice(0, wordLimit).join(" ") + "...";
-    }
-    return description;
+    navigate(`/product/${product._id}`); // Assuming product_id is used for routing
   };
 
   // Function to handle Add to Cart button click
   const handleAddToCart = (e) => {
     e.stopPropagation(); // Prevent card click from triggering
-    dispatch(addCartItem(product)); // Dispatch add to cart action
+    dispatch(addCartItem(product._id)); // Dispatch add to cart action
     setCartSuccess(true); // Show cart success message
     setTimeout(() => setCartSuccess(false), 3000); // Hide after 3 seconds
   };
@@ -36,7 +27,7 @@ const Productcard = ({ product }) => {
   // Function to handle Add to Wishlist button click
   const handleAddToWishlist = (e) => {
     e.stopPropagation(); // Prevent card click from triggering
-    dispatch(addWishlistItem(product)); // Dispatch add to wishlist action
+    dispatch(addWishlistItem(product._id)); // Dispatch add to wishlist action
     setWishlistSuccess(true); // Show wishlist success message
     setTimeout(() => setWishlistSuccess(false), 3000); // Hide after 3 seconds
   };
@@ -47,17 +38,14 @@ const Productcard = ({ product }) => {
       onClick={handleCardClick}
     >
       <img
-        src={product.image}
+        src={(product.images || "").split(" | ")[0]} // Display only the first image
         alt={product.title}
         className="w-full h-48 object-cover"
       />
       <div className="p-4">
         <h2 className="text-xl font-bold mb-2">{product.title}</h2>
-        <p className="text-gray-700 mb-2">{product.category}</p>
-        <p className="text-gray-900 mb-4">${product.price}</p>
-        <p className="text-gray-600 mb-4">
-          {truncateDescription(product.description, 20)}
-        </p>
+        <p className="text-gray-700 mb-2">{product.brand}</p>
+        <p className="text-gray-900 mb-4">₹{product.variant_price}</p>
         <div className="flex justify-between items-center">
           {/* Add to Cart button */}
           <button
@@ -90,12 +78,11 @@ const Productcard = ({ product }) => {
 
 Productcard.propTypes = {
   product: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    product_id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
-    price: PropTypes.string.isRequired,
-    category: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    image: PropTypes.string.isRequired,
+    brand: PropTypes.string.isRequired,
+    variant_price: PropTypes.number.isRequired,
+    images: PropTypes.string.isRequired, // Expecting images as a string of URLs separated by " | "
   }).isRequired,
 };
 

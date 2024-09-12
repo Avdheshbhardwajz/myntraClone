@@ -12,25 +12,32 @@ const initialState = {
 const token = localStorage.getItem("Authorization");
 
 // Add item to cart
-export const addItem = createAsyncThunk("cart/addItem", async (item) => {
+export const addItem = createAsyncThunk("cart/addItem", async (id) => {
   const response = await axios.post(
     `${import.meta.env.VITE_API_LINK}/api/v1/cart/add`,
-    item,
+    { uniqueId: id },
     {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }
   );
+
   return response.data;
 });
 
 // Get cart items
-export const getItem = createAsyncThunk("cart/getItem", async (id) => {
+export const getItem = createAsyncThunk("cart/getItem", async () => {
   const response = await axios.get(
-    `${import.meta.env.VITE_API_LINK}/api/v1/cart/get/${id}`
+    `${import.meta.env.VITE_API_LINK}/api/v1/cart`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
-  return response.data;
+
+  return response.data.items;
 });
 
 // Delete item from cart

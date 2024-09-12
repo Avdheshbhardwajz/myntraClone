@@ -10,6 +10,8 @@ const Wishlist = () => {
     loading,
     error,
   } = useSelector((state) => state.wishlist); // Destructure state
+
+  console.log(wishlistItems);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -39,12 +41,12 @@ const Wishlist = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {wishlistItems.map((item) => (
               <div
-                key={item.id}
+                key={item._uniq_id}
                 className="bg-gray-800 rounded-lg shadow-lg p-4 transform transition-transform hover:scale-105"
               >
-                <Link to={`/product/${item.id}`}>
+                <Link to={`/product/${item.uniq_id}`}>
                   <img
-                    src={item.image}
+                    src={item.images.split("|")[0]}
                     alt={item.title}
                     className="w-full h-40 object-cover rounded-lg mb-4"
                   />
@@ -54,14 +56,14 @@ const Wishlist = () => {
                     {item.title}
                   </h2>
                   <button
-                    onClick={() => handleRemove(item.id)}
+                    onClick={() => handleRemove(item.uniq_id)}
                     className="text-red-500 hover:text-red-700"
                   >
                     <AiOutlineClose size={20} />
                   </button>
                 </div>
-                <p className="text-gray-400 mb-4">${item.price}</p>
-                <Link to={`/product/${item.id}`}>
+                <p className="text-gray-400 mb-4">₹{item.variant_price}</p>
+                <Link to={`/product/${item.uniq_id}`}>
                   <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded">
                     View Product
                   </button>

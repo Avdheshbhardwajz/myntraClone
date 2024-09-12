@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const items = useSelector((state) => state.cart.items || []); // Ensure items isn't undefined
+  console.log(items);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -32,15 +33,19 @@ const Cart = () => {
           <ul className="space-y-4">
             {items.map((item) => (
               <li
-                key={item.id}
+                key={item.productId.id}
                 className="bg-gray-800 p-4 rounded-lg flex justify-between items-center"
               >
                 <div className="flex-1">
-                  <h3 className="text-lg font-medium">{item.title}</h3>
-                  <p className="text-gray-400">${item.price}</p>
+                  <h3 className="text-lg font-medium">
+                    {item.productId.title}
+                  </h3>
+                  <p className="text-gray-400">
+                    ₹{item.productId.variant_price}
+                  </p>
                 </div>
                 <button
-                  onClick={() => handleRemove(item.id)}
+                  onClick={() => handleRemove(item.productId.id)}
                   className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300"
                 >
                   Remove

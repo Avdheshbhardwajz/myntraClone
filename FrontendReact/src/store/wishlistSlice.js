@@ -10,10 +10,12 @@ const initialState = {
 
 const token = localStorage.getItem("Authorization");
 console.log(token);
-export const addItem = createAsyncThunk("addWishlist", async (item) => {
+
+export const addItem = createAsyncThunk("addWishlist", async (id) => {
   const response = await axios.post(
     `${import.meta.env.VITE_API_LINK}/api/v1/wishlist/add`,
-    item,
+    { uniqueId: id },
+
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -24,11 +26,17 @@ export const addItem = createAsyncThunk("addWishlist", async (item) => {
   return response.data;
 });
 
-export const getItem = createAsyncThunk("getWishlist", async (id) => {
+export const getItem = createAsyncThunk("getWishlist", async () => {
   const response = await axios.get(
-    `${import.meta.env.VITE_API_LINK}/api/v1/wishlist/get/${id}`
+    `${import.meta.env.VITE_API_LINK}/api/v1/wishlist/get`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
-  return response.data;
+  console.log(response.data.products);
+  return response.data.products;
 });
 export const deleteItem = createAsyncThunk("deleteWishlist", async (id) => {
   const response = await axios.delete(

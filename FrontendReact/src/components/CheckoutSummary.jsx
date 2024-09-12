@@ -14,15 +14,15 @@ const CheckoutSummary = ({ items, totalAmount }) => {
               key={item.id}
               className="flex justify-between items-center border-b py-2"
             >
-              <span>{item.title}</span>
-              <span>${item.price}</span>
+              <span>{item.productId.title}</span>
+              <span>₹{item.productId.variant_price}</span>
             </li>
           ))}
         </ul>
       )}
       <div className="mt-4 text-lg font-semibold">
         <span>Total: </span>
-        <span>${totalAmount.toFixed(2)}</span>
+        <span>₹{totalAmount.toFixed(2)}</span>
       </div>
     </div>
   );
