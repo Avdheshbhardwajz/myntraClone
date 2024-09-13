@@ -40,7 +40,12 @@ export const getItem = createAsyncThunk("getWishlist", async () => {
 });
 export const deleteItem = createAsyncThunk("deleteWishlist", async (id) => {
   const response = await axios.delete(
-    `${import.meta.env.VITE_API_LINK}/api/v1/wishlist/delete/${id}`
+    `${import.meta.env.VITE_API_LINK}/api/v1/wishlist/delete/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
   return response.data;
 });
@@ -78,7 +83,7 @@ const wishlistSlice = createSlice({
     });
     builder.addCase(deleteItem.fulfilled, (state, action) => {
       state.loading = false;
-      state.items = action.payload;
+      state.items = state.items.filter((item) => item._id !== action.meta.arg);
     });
     builder.addCase(deleteItem.rejected, (state, action) => {
       state.loading = false;

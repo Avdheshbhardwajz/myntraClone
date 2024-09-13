@@ -1,20 +1,32 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getItem, deleteItem } from "../store/cartSlice";
 import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
-  const items = useSelector((state) => state.cart.items || []); // Ensure items isn't undefined
-  console.log(items);
+  const items = useSelector((state) => state.cart.items || []); // Redux store items
+  const [cartItems, setCartItems] = useState([]); // Local state for cart items
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch items from the store on component mount
     dispatch(getItem());
   }, [dispatch]);
 
+  // Sync the local state with the Redux store whenever items change
+  useEffect(() => {
+    setCartItems(items);
+  }, [items]);
+
   const handleRemove = (id) => {
-    dispatch(deleteItem(id));
+    dispatch(deleteItem(id))
+      .unwrap()
+      .then(() => {
+        console.log(`Item ${id} removed successfully`);
+        setCartItems(cartItems.filter((item) => item._id !== id)); // Update the local state
+      })
+      .catch((err) => console.error("Error removing item: ", err));
   };
 
   const handleCheckout = () => {
@@ -26,14 +38,14 @@ const Cart = () => {
       <h2 className="text-3xl font-semibold mb-6 text-center font-poppins">
         Shopping Cart
       </h2>
-      {items.length === 0 ? (
+      {cartItems.length === 0 ? (
         <p className="text-lg text-center">Your cart is empty.</p>
       ) : (
         <>
           <ul className="space-y-4">
-            {items.map((item) => (
+            {cartItems.map((item) => (
               <li
-                key={item.productId.id}
+                key={item.productId.uniq_id}
                 className="bg-gray-800 p-4 rounded-lg flex justify-between items-center"
               >
                 <div className="flex-1">
@@ -45,7 +57,7 @@ const Cart = () => {
                   </p>
                 </div>
                 <button
-                  onClick={() => handleRemove(item.productId.id)}
+                  onClick={() => handleRemove(item._id)}
                   className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300"
                 >
                   Remove

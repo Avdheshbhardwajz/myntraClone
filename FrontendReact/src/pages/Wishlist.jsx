@@ -6,7 +6,7 @@ import { AiOutlineClose } from "react-icons/ai";
 
 const Wishlist = () => {
   const {
-    items: wishlistItems,
+    items: wishlistItems = [],
     loading,
     error,
   } = useSelector((state) => state.wishlist); // Destructure state
@@ -16,7 +16,7 @@ const Wishlist = () => {
 
   useEffect(() => {
     dispatch(getItem()); // Fetch wishlist items on mount
-  }, [dispatch]);
+  }, []);
 
   const handleRemove = (id) => {
     dispatch(deleteItem(id)); // Dispatch deleteItem action
@@ -56,14 +56,14 @@ const Wishlist = () => {
                     {item.title}
                   </h2>
                   <button
-                    onClick={() => handleRemove(item.uniq_id)}
+                    onClick={() => handleRemove(item._id)}
                     className="text-red-500 hover:text-red-700"
                   >
                     <AiOutlineClose size={20} />
                   </button>
                 </div>
                 <p className="text-gray-400 mb-4">₹{item.variant_price}</p>
-                <Link to={`/product/${item.uniq_id}`}>
+                <Link to={`/product/${item._id}`}>
                   <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded">
                     View Product
                   </button>

@@ -43,7 +43,12 @@ export const getItem = createAsyncThunk("cart/getItem", async () => {
 // Delete item from cart
 export const deleteItem = createAsyncThunk("cart/deleteItem", async (id) => {
   const response = await axios.delete(
-    `${import.meta.env.VITE_API_LINK}/api/v1/cart/delete/${id}`
+    `${import.meta.env.VITE_API_LINK}/api/v1/cart/delete/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
   return response.data;
 });
