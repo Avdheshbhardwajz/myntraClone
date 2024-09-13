@@ -71,8 +71,8 @@ exports.getCart = async (req, res) => {
 
 // Delete item from cart
 exports.deleteFromCart = async (req, res) => {
-  const { userId } = req.body;
-  const { productId } = req.params;
+  const { userId } = req.user; // Extract userId from req.user
+  const { productId } = req.params; // Extract productId from req.params
 
   try {
     let cart = await Cart.findOne({ userId });
@@ -81,11 +81,22 @@ exports.deleteFromCart = async (req, res) => {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    cart.items = cart.items.filter((item) => item.productId !== productId);
-    cart.calculateTotalPrice();
+    // Check if the product exists in the cart
+    const itemIndex = cart.items.findIndex(
+      (item) => item._id.toString() === productId
+    );
+
+    if (itemIndex === -1) {
+      return res.status(404).json({ message: "Product not found in cart" });
+    }
+
+    // Remove the item from the cart
+    cart.items.splice(itemIndex, 1);
+
+    // Save the updated cart
     await cart.save();
 
-    res.status(200).json(cart);
+    res.status(200).json({ message: "Product removed from cart", cart });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error deleting item from cart" });

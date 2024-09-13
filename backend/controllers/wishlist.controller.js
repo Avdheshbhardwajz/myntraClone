@@ -41,7 +41,7 @@ exports.addToWishlist = async (req, res) => {
 exports.removeFromWishlist = async (req, res) => {
   try {
     const { productId } = req.params;
-    const userId = req.user._id;
+    const userId = req.user.userId;
 
     // Find the wishlist for the user
     const wishlist = await Wishlist.findOne({ user: userId });
@@ -51,7 +51,7 @@ exports.removeFromWishlist = async (req, res) => {
 
     // Check if the product is in the wishlist
     const productIndex = wishlist.products.findIndex(
-      (p) => p.productId === productId
+      (p) => p._id.toString() === productId
     );
     if (productIndex === -1) {
       return res.status(404).json({ message: "Product not found in wishlist" });
